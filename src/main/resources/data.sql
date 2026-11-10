@@ -63,6 +63,5 @@ INSERT INTO cardapios (id,titulo) VALUES(2,'Cardapio de Setembro');
 INSERT INTO cardapio_produto (cardapio_id,produto_id) VALUES (1,1);
 INSERT INTO cardapio_produto (cardapio_id,produto_id) VALUES (1,2);
 INSERT INTO cardapio_produto (cardapio_id,produto_id) VALUES (1,3);
-
 INSERT INTO cardapio_produto (cardapio_id,produto_id) VALUES (2,1);
 INSERT INTO cardapio_produto (cardapio_id,produto_id) VALUES (2,3);

@@ -24,7 +24,7 @@ public class CardapioController {
     private RecuperaListaCardapiosUC recuperaListaCardapioUC;
 
     public CardapioController(RecuperarCardapioUC recuperaCardapioUC,
-                              RecuperaListaCardapiosUC recuperaListaCardapioUC) {
+        RecuperaListaCardapiosUC recuperaListaCardapioUC) {
         this.recuperaCardapioUC = recuperaCardapioUC;
         this.recuperaListaCardapioUC = recuperaListaCardapioUC;
     }
@@ -44,13 +44,16 @@ public class CardapioController {
         return cardapioPresenter;
     }
 
-    @GetMapping("/lista")
+    /* @GetMapping("/lista") está dizendo ao Spring: "Quando alguém fizer uma requisição GET para /cardapio/lista, 
+    execute este método. GET é um tipo de requisição HTTP utilizado para solicitar informações a um servidor " */
+
+    @GetMapping("/lista") 
     @CrossOrigin("*")
     public List<CabecalhoCardapioPresenter> recuperaListaCardapios(){
-         List<CabecalhoCardapioPresenter> lstCardapios = 
-            recuperaListaCardapioUC.run().cabecalhos().stream()
+        List<CabecalhoCardapioPresenter> lstCardapios = 
+            recuperaListaCardapioUC.run().cabecalhos().stream() // Percorre os cabeçalhos e transforma cada um em um objeto
             .map(cabCar -> new CabecalhoCardapioPresenter(cabCar.id(),cabCar.titulo()))
             .toList();
-         return lstCardapios;
+        return lstCardapios;
     }
 }

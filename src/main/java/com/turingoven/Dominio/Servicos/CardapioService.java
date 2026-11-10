@@ -11,7 +11,11 @@ import com.turingoven.Dominio.Entidades.CabecalhoCardapio;
 import com.turingoven.Dominio.Entidades.Cardapio;
 import com.turingoven.Dominio.Entidades.Produto;
 
-@Service
+/* A interface CardapioRepository define quais operações de acesso aos dados devem estar disponíveis 
+para as classes que precisam consultar os cardápios, principalmente o CardapioService sem depender 
+de uma implementação específica de persistência. */
+
+@Service // Informa ao Spring que essa classe representa um serviço e deve ser gerenciada por ele.
 public class CardapioService {
     private CardapioRepository cardapioRepository;
 
@@ -23,6 +27,9 @@ public class CardapioService {
     public Cardapio recuperaCardapio(long Id){
         return cardapioRepository.recuperaPorId(Id);
     }
+
+    /* Quando o método é chamado, Java executa a implementação concreta fornecida ao serviço — no nosso projeto, 
+    CardapioRepositoryJDBC. */
 
     public List<CabecalhoCardapio> recuperaListaDeCardapios(){
         return cardapioRepository.cardapiosDisponiveis();
