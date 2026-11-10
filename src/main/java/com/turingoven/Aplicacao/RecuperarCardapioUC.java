@@ -10,7 +10,9 @@ import com.turingoven.Dominio.Entidades.Cardapio;
 import com.turingoven.Dominio.Entidades.Produto;
 import com.turingoven.Dominio.Servicos.CardapioService;
 
-@Component
+/* Recupera o cardápio solicitado e as sugestões do chef, reunindo essas informações em um objeto de resposta. */
+
+@Component // Indica que esta classe é um componente gerenciado pelo Spring, permitindo a injeção de dependências.
 public class RecuperarCardapioUC {
     private CardapioService cardapioService;
 
