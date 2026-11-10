@@ -1,80 +1,96 @@
 # The Turing Oven 🍕
 
-A pizza delivery backend developed as the final project for the **Software Development Fundamentals** course.
+Backend de uma pizzaria desenvolvido como projeto final da disciplina de **Fundamentos de Desenvolvimento de Software**.
 
-## About the Project
+## Sobre o projeto
 
-The Turing Oven is a backend system designed to manage the operations of an online pizzeria, including menu management, customer orders, inventory validation, payments, kitchen processing, and deliveries.
+O **The Turing Oven** é um sistema backend voltado à gestão de uma pizzaria, contemplando funcionalidades relacionadas a cardápios, pedidos de clientes, controle de estoque, pagamentos, preparação na cozinha e entregas.
 
-The project follows **Clean Architecture** principles, separating business rules, application use cases, and external adapters.
+O projeto segue princípios da **Arquitetura Limpa (Clean Architecture)**, separando regras de negócio, casos de uso e componentes responsáveis pela comunicação com recursos externos.
 
-## Technologies
+## Tecnologias
 
 - Java 21
 - Spring Boot 3.5.4
 - Maven (Wrapper 3.9.16)
-- H2 Database
-- JDBC (starter implementation)
-- JPA (planned persistence migration)
+- Banco de dados H2
+- JDBC (implementação inicial de persistência)
+- JPA (migração prevista no projeto)
 - JUnit / Spring Boot Test
 
-## Project Structure
+## Estrutura do projeto
 
-- `src/main/java` — Application source code
-- `src/main/resources` — Configuration and database scripts
-- `src/test/java` — Automated tests
-- `out/docs/diagrams` — Architecture and design diagrams
-- `.mvn/wrapper` — Maven Wrapper configuration
-- `pom.xml` — Maven project configuration and dependencies
+| Caminho | Finalidade |
+|---|---|
+| `src/main/java` | Código-fonte da aplicação |
+| `src/main/resources` | Configurações e scripts do banco de dados |
+| `src/test/java` | Testes automatizados |
+| `out/docs/diagrams` | Diagramas de arquitetura e modelagem |
+| `.mvn/wrapper` | Configuração do Maven Wrapper |
+| `pom.xml` | Configuração do projeto Maven e suas dependências |
 
-## Arquitetura do Projeto
+## Arquitetura do projeto
 
-O The Turing Oven utiliza **Arquitetura Limpa (Clean Architecture)**, seguindo a estrutura apresentada no estudo de caso do professor. O objetivo é separar as responsabilidades da aplicação, evitando que as regras de negócio dependam diretamente de tecnologias externas.
+O The Turing Oven utiliza **Arquitetura Limpa (Clean Architecture)**, seguindo a organização apresentada no estudo de caso do professor. O objetivo é separar as responsabilidades da aplicação, evitando que as regras de negócio dependam diretamente das tecnologias utilizadas para executá-las.
 
 ### Camadas da aplicação
 
 | Pasta | Responsabilidade |
 |---|---|
 | `Aplicacao/` | Contém os casos de uso que coordenam as funcionalidades do sistema, como listar cardápios e submeter pedidos. |
-| `Dominio/` | Contém as entidades, regras de negócio, serviços e interfaces que representam as necessidades da pizzaria. |
-| `Adaptadores/` | Contém as implementações responsáveis pela comunicação com recursos externos, como requisições HTTP e banco de dados. |
+| `Dominio/` | Contém as entidades, regras de negócio, serviços de domínio e interfaces que representam as necessidades da pizzaria. |
+| `Adaptadores/` | Contém os componentes que conectam a aplicação a recursos externos, como requisições HTTP e banco de dados. |
+
+### Conceitos fundamentais da arquitetura
+
+- **Caso de uso (UC):** representa uma funcionalidade do sistema e coordena as operações necessárias para executá-la.
+- **Serviço de domínio (Service):** classe que disponibiliza operações relacionadas às regras e aos conceitos do negócio.
+- **Repositório (Repository):** abstração utilizada para consultar ou modificar dados. A interface define as operações disponíveis, enquanto uma implementação concreta determina como elas são executadas.
+- **Dependência:** objeto de que uma classe precisa para realizar suas responsabilidades.
+- **Injeção de dependência:** técnica pela qual uma classe recebe os objetos de que precisa, em vez de criá-los diretamente.
+
+De forma geral, o fluxo de uma funcionalidade que acessa o banco de dados é:
+
+**Controller → Caso de uso → Serviço de domínio → Interface do repositório → Implementação de persistência → Banco de dados**
+
+Cada componente desempenha uma responsabilidade específica, facilitando a compreensão, os testes e a manutenção do sistema.
 
 ### Interfaces e implementações
 
 Um princípio importante da Arquitetura Limpa é que **o domínio define as operações de que precisa, mas não precisa conhecer a tecnologia utilizada para executá-las**.
 
-Na UC1 — Listar cardápios disponíveis, temos:
+Na **UC1 — Listar cardápios disponíveis**, por exemplo:
 
-- `CardapioService`: serviço de domínio que solicita a listagem de cardápios.
-- `CardapioRepository`: interface do domínio que define as operações disponíveis para acessar os dados dos cardápios.
-- `CardapioRepositoryJDBC`: adaptador que implementa essa interface utilizando JDBC.
+- `CardapioService` disponibiliza operações relacionadas aos cardápios e solicita a listagem ao repositório.
+- `CardapioRepository` é a interface do domínio que declara as operações de acesso aos dados dos cardápios.
+- `CardapioRepositoryJDBC` é o adaptador que implementa essas operações por meio de JDBC e comandos SQL.
 
-O `CardapioService` utiliza `CardapioRepository`, e não diretamente `CardapioRepositoryJDBC`.
+O `CardapioService` utiliza a interface `CardapioRepository`, sem depender diretamente da classe `CardapioRepositoryJDBC`.
 
-Essa separação permite substituir a implementação JDBC por uma implementação JPA sem alterar necessariamente o serviço ou o caso de uso, desde que o contrato da interface seja preservado.
+Essa separação permite substituir a implementação JDBC por outra baseada em JPA sem necessariamente alterar o serviço ou o caso de uso, desde que o contrato da interface seja preservado.
 
-### Injeção de dependência
+### Injeção de dependência no Spring
 
-O Spring gerencia os componentes da aplicação e fornece as dependências necessárias por meio de seus construtores.
+O Spring gerencia os componentes da aplicação e fornece os objetos necessários às classes, normalmente por meio de seus construtores.
 
-No projeto, utilizamos anotações como:
+As principais anotações utilizadas são:
 
 - `@Component`: registra uma classe como componente gerenciado pelo Spring.
 - `@Service`: identifica uma classe de serviço gerenciada pelo Spring.
-- `@Autowired`: indica onde uma dependência deve ser injetada. É opcional quando a classe possui apenas um construtor.
+- `@Autowired`: indica um ponto de injeção de dependência. Em classes com apenas um construtor, seu uso é opcional nas versões atuais do Spring.
 
-Esse mecanismo permite conectar os componentes sem que cada classe precise criar manualmente os objetos dos quais depende.
+Assim, uma classe pode utilizar outra sem precisar instanciá-la manualmente com `new`.
 
-## Getting Started
+## Como executar
 
-### Requirements
+### Pré-requisitos
 
-- Java Development Kit (JDK) 21 or compatible
-- An available terminal
+- JDK 21 ou versão compatível com a configuração do projeto
+- Terminal disponível
 
-Maven does not need to be installed separately when using the Maven Wrapper.
+Não é necessário instalar o Maven separadamente, pois o projeto inclui o **Maven Wrapper**.
 
-### Running the Application
+### Iniciar a aplicação
 
 **macOS / Linux**
 
@@ -88,9 +104,9 @@ Maven does not need to be installed separately when using the Maven Wrapper.
 mvnw.cmd spring-boot:run
 ```
 
-By default, the application runs at `http://localhost:8080`.
+Por padrão, a aplicação é iniciada em `http://localhost:8080`.
 
-### Running Tests
+### Executar os testes
 
 **macOS / Linux**
 
@@ -104,10 +120,10 @@ By default, the application runs at `http://localhost:8080`.
 mvnw.cmd clean test
 ```
 
-## Development
+## Desenvolvimento
 
-This project builds upon starter code provided by the course professor. Additional use cases and services will be implemented incrementally.
+O projeto parte de um código inicial disponibilizado pelo professor. Os casos de uso e serviços adicionais serão desenvolvidos gradualmente, mantendo a separação de responsabilidades definida na arquitetura.
 
-## Project Status
+## Status do projeto
 
-Under development.
+**Em desenvolvimento.**
