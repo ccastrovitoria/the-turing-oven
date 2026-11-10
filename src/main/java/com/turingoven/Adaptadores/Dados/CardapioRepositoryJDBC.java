@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.turingoven.Dominio.Dados.CardapioRepository;
 import com.turingoven.Dominio.Dados.ProdutosRepository;
@@ -67,5 +68,36 @@ public class CardapioRepositoryJDBC implements CardapioRepository{
         );
         return cabCardapios;
     }
-    
+
+    /* UC2: definirCardapioAtual altera no banco de dados o cardápio atual da pizzaria */
+
+    @Override
+    @Transactional // Garante que, se alguma operação dentro do método falhar, todas serão revertidas.
+    public void definirCardapioAtual(long id) {
+        
+        // Conta quantos cardápios possuem o identificador informado
+        Integer quantidade = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM cardapios WHERE id = ?",
+            Integer.class,
+            id 
+        );
+
+        // // Impede a seleção de um cardápio que não existe
+        if (quantidade == null || quantidade.intValue() == 0) {
+            throw new IllegalArgumentException(
+                "Cardápio não encontrado: " + id 
+            );
+        }
+
+        // Desmarca todos os cardápios como não atuais
+        jdbcTemplate.update(
+            "UPDATE cardapios SET atual = false"
+        );
+
+        // Seleciona o novo cardápio atual pelo ID fornecido
+        jdbcTemplate.update(
+            "UPDATE cardapios SET atual = true WHERE id = ?",
+            id
+        );
+    }
 }

@@ -38,4 +38,11 @@ public class CardapioService {
     public List<Produto> recuperaSugestoesDoChef(){
         return cardapioRepository.indicacoesDoChef();
     }
+
+    /* UC2: Chama o método responsável por atualizar no banco de dados qual cardápio está definido como 
+    atual, sem precisar escrever em SQL ou usar JdbcTemplate ou conhecer a classe CardapioRepositoryJDBC. */
+
+    public void definirCardapioAtual(long id) {
+        cardapioRepository.definirCardapioAtual(id);
+    }
 }

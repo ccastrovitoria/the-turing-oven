@@ -1,3 +1,5 @@
+
+-- Tabela de Clientes
 create table if not exists clientes(
   cpf varchar(15) not null primary key,
   nome varchar(100) not null,
@@ -6,11 +8,13 @@ create table if not exists clientes(
   email varchar(255) not null
 );
 
+-- Tabela de Ingredientes
 create table if not exists ingredientes (
   id bigint primary key,
   descricao varchar(255) not null
 );
 
+-- Tabela de Itens de Estoque
 create table if not exists itensEstoque(
     id bigint primary key,
     quantidade int,
@@ -52,7 +56,10 @@ create table if not exists produto_receita (
 -- Tabela de Cardapios
 create table if not exists cardapios (
   id bigint primary key,
-  titulo varchar(255) not null
+  titulo varchar(255) not null,
+
+  -- UC2: Atributo para indicar se o cardápio é atual ou não
+  atual boolean not null default false
 );
 
 -- Tabela de relacionamento entre Cardapio e Produto
