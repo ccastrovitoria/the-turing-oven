@@ -38,19 +38,28 @@ public class CardapioController {
         this.defineCardapioAtualUC = defineCardapioAtualUC;
     }
 
+    /* Recebe o identificador de um cardápio, executa sua recuperação e utiliza o CardapioPresenter para 
+    preparar a resposta da API, contendo o título, os produtos, os preços e as sugestões do chef */
+
     @GetMapping("/{id}")
     @CrossOrigin("*")
     public CardapioPresenter recuperaCardapio(@PathVariable(value="id")long id){ // 
+        
         CardapioResponse cardapioResponse = recuperaCardapioUC.run(id);
         Set<Long> conjIdSugestoes = new HashSet<>(cardapioResponse.getSugestoesDoChef().stream()
             .map(produto->produto.getId())
-            .toList());
+            .toList()); // Cria um conjunto de IDs dos produtos que são sugestões do chef, para facilitar a verificação posterior.
+        
         CardapioPresenter cardapioPresenter = new CardapioPresenter(cardapioResponse.getCardapio().getCabecalhoCardapio().titulo());
-        for(Produto produto:cardapioResponse.getCardapio().getProdutos()){
-            boolean sugestao = conjIdSugestoes.contains(produto.getId());
-            cardapioPresenter.insereItem(produto.getId(), produto.getDescricao(), produto.getPreco(), sugestao);
+        for(Produto produto:cardapioResponse.getCardapio().getProdutos()){ // Para cada produto da lista de produtos do cardápio
+            boolean sugestao = conjIdSugestoes.contains(produto.getId()); // Se o produto está no conjunto de sugestões do chef
+            cardapioPresenter.insereItem(produto.getId(), 
+            produto.getDescricao(), 
+            produto.getPreco(), 
+            sugestao
+            ); // Adiciona o produto ao CardapioPresenter, incluindo se é sugestão do chef ou não.
         }
-        return cardapioPresenter;
+        return cardapioPresenter; // Retorna o CardapioPresenter, que será convertido em JSON e enviado como resposta da API.
     }
 
     /* @GetMapping("/lista") está dizendo ao Spring: "Quando alguém fizer uma requisição GET para /cardapio/lista, 
