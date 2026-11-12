@@ -11,9 +11,8 @@ import com.turingoven.Dominio.Entidades.CabecalhoCardapio;
 import com.turingoven.Dominio.Entidades.Cardapio;
 import com.turingoven.Dominio.Entidades.Produto;
 
-/* A interface CardapioRepository define quais operações de acesso aos dados devem estar disponíveis 
-para as classes que precisam consultar os cardápios, principalmente o CardapioService sem depender 
-de uma implementação específica de persistência. */
+/* O repositório JDBC executa as operações exigidas pela interface. A classe CardapioService utiliza os resultados dessas 
+operações para atender às solicitações dos casos de uso, devolvendo os dados consultados ou confirmando as alterações realizadas. */
 
 @Service // Informa ao Spring que essa classe representa um serviço e deve ser gerenciada por ele.
 public class CardapioService {
@@ -40,9 +39,16 @@ public class CardapioService {
     }
 
     /* UC2: Chama o método responsável por atualizar no banco de dados qual cardápio está definido como 
-    atual, sem precisar escrever em SQL ou usar JdbcTemplate ou conhecer a classe CardapioRepositoryJDBC. */
+    atual, sem precisar escrever em SQL ou usar JdbcTemplate ou conhecer a classe CardapioRepositoryJDBC */
 
     public void definirCardapioAtual(long id) {
         cardapioRepository.definirCardapioAtual(id);
     }
+
+    /* UC5: Chama o método do CardapioRepository executado pelo CardapioRepositoryJDBC que busca o cardápio atual 
+    no banco de dados e devolve o cardápio encontrado para RecuperarCardapioUC, que fez a solicitação */
+
+    public Cardapio recuperaCardapioAtual() {
+    return cardapioRepository.recuperaCardapioAtual();
+}
 }

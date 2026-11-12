@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ No projeto vamos ter que trocar essa implementação para JPA que permite mapear
 e trabalhar com esses objetos. Usa JDBC por baixo dos panos (normalmente por meio de uma implementação como o Hibernate).  */
 
 @Component // // Anotação para indicar que esta classe é um componente gerenciado pelo Spring
-public class CardapioRepositoryJDBC implements CardapioRepository{ 
+public class CardapioRepositoryJDBC implements CardapioRepository{ // 
     private JdbcTemplate jdbcTemplate;
     private ProdutosRepository produtosRepository;
 
@@ -100,4 +101,23 @@ public class CardapioRepositoryJDBC implements CardapioRepository{
             id
         );
     }
+
+    /* UC5: Implementa a operação definida na interface CardapioRepository. Consulta o banco para encontrar o ID 
+    do cardápio marcado como atual e utiliza o método recuperaPorId para carregar seus dados completos. */
+
+    @Override
+    public Cardapio recuperaCardapioAtual() {
+    String sql = "SELECT id FROM cardapios WHERE atual = true";
+
+    try {
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return recuperaPorId(id);
+
+    } catch (EmptyResultDataAccessException e) { // Exceção caso nenhum cardápio esteja definido como atual
+        throw new IllegalStateException(
+            "Nenhum cardápio atual foi definido."
+        );
+    }
 }
+}
+
