@@ -38,14 +38,18 @@ public class CardapioController {
         this.defineCardapioAtualUC = defineCardapioAtualUC;
     }
 
-    /* Recebe o identificador de um cardápio, executa sua recuperação e utiliza o CardapioPresenter para 
-    preparar a resposta da API, contendo o título, os produtos, os preços e as sugestões do chef */
+    /* UC5: O cliente agora consulta somente o cardápio definido como atual pelo administrador na UC2.
+    O Controller não precisa mais receber o ID do cardápio, porque o RecuperarCardapioUC já busca o cardápio atual.
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") → subsituido → @GetMapping
+    recuperaCardapio(@PathVariable(value="id") long id) → substituido → recuperaCardapio()
+    recuperaCardapioUC.run(id) → substituido → recuperaCardapioUC.run() */
+
+    @GetMapping // Define que o cardápio será consultado pelo endereço /cardapio.
     @CrossOrigin("*")
-    public CardapioPresenter recuperaCardapio(@PathVariable(value="id")long id){ // 
+    public CardapioPresenter recuperaCardapio(){ // 
         
-        CardapioResponse cardapioResponse = recuperaCardapioUC.run(id);
+        CardapioResponse cardapioResponse = recuperaCardapioUC.run(); // // Chama o RecuperarCardapioUC para buscar o cardápio atual
         Set<Long> conjIdSugestoes = new HashSet<>(cardapioResponse.getSugestoesDoChef().stream()
             .map(produto->produto.getId())
             .toList()); // Cria um conjunto de IDs dos produtos que são sugestões do chef, para facilitar a verificação posterior.
