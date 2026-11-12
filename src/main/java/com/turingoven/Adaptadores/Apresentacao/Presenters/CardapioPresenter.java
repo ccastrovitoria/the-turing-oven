@@ -3,6 +3,9 @@ package com.turingoven.Adaptadores.Apresentacao.Presenters;
 import java.util.LinkedList;
 import java.util.List;
 
+/* CardapioPresenter organiza as informações reunidas pelo CardapioResponse para que 
+possam ser apresentadas na resposta da API. Usamos o título do cardápio como referência. */
+
 public class CardapioPresenter {
     public class ItemCardapioPresenter{
         private Long id;
@@ -35,11 +38,11 @@ public class CardapioPresenter {
     }
 
     private String titulo;
-    private List<ItemCardapioPresenter> itens;
+    private List<ItemCardapioPresenter> itens; 
 
     public CardapioPresenter(String titulo){
         this.titulo = titulo;
-        itens = new LinkedList<>();
+        itens = new LinkedList<>(); // Construtor guarda título do cardápio e cria uma lista vazia para receber os produtos.
     }
 
     public String getTitulo(){
@@ -47,7 +50,7 @@ public class CardapioPresenter {
     }
 
     public void insereItem(long id,String titulo,int preco,boolean sugestao){
-        itens.add(new ItemCardapioPresenter(id, titulo, preco, sugestao));
+        itens.add(new ItemCardapioPresenter(id, titulo, preco, sugestao)); 
     }
     
     public List<ItemCardapioPresenter> getItens() {

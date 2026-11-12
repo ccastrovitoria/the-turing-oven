@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.turingoven.Dominio.Dados.CardapioRepository;
 import com.turingoven.Dominio.Dados.ProdutosRepository;
@@ -20,7 +22,7 @@ No projeto vamos ter que trocar essa implementação para JPA que permite mapear
 e trabalhar com esses objetos. Usa JDBC por baixo dos panos (normalmente por meio de uma implementação como o Hibernate).  */
 
 @Component // // Anotação para indicar que esta classe é um componente gerenciado pelo Spring
-public class CardapioRepositoryJDBC implements CardapioRepository{ 
+public class CardapioRepositoryJDBC implements CardapioRepository{ // 
     private JdbcTemplate jdbcTemplate;
     private ProdutosRepository produtosRepository;
 
@@ -67,5 +69,55 @@ public class CardapioRepositoryJDBC implements CardapioRepository{
         );
         return cabCardapios;
     }
-    
+
+    /* UC2: definirCardapioAtual altera no banco de dados o cardápio atual da pizzaria */
+
+    @Override
+    @Transactional // Garante que, se alguma operação dentro do método falhar, todas serão revertidas.
+    public void definirCardapioAtual(long id) {
+        
+        // Conta quantos cardápios possuem o identificador informado
+        Integer quantidade = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM cardapios WHERE id = ?",
+            Integer.class,
+            id 
+        );
+
+        // // Impede a seleção de um cardápio que não existe
+        if (quantidade == null || quantidade.intValue() == 0) {
+            throw new IllegalArgumentException(
+                "Cardápio não encontrado: " + id 
+            );
+        }
+
+        // Desmarca todos os cardápios como não atuais
+        jdbcTemplate.update(
+            "UPDATE cardapios SET atual = false"
+        );
+
+        // Seleciona o novo cardápio atual pelo ID fornecido
+        jdbcTemplate.update(
+            "UPDATE cardapios SET atual = true WHERE id = ?",
+            id
+        );
+    }
+
+    /* UC5: Implementa a operação definida na interface CardapioRepository. Consulta o banco para encontrar o ID 
+    do cardápio marcado como atual e utiliza o método recuperaPorId para carregar seus dados completos. */
+
+    @Override
+    public Cardapio recuperaCardapioAtual() {
+    String sql = "SELECT id FROM cardapios WHERE atual = true";
+
+    try {
+        Long id = jdbcTemplate.queryForObject(sql, Long.class);
+        return recuperaPorId(id);
+
+    } catch (EmptyResultDataAccessException e) { // Exceção caso nenhum cardápio esteja definido como atual
+        throw new IllegalStateException(
+            "Nenhum cardápio atual foi definido."
+        );
+    }
 }
+}
+
